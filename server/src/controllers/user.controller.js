@@ -57,46 +57,60 @@ const loginUser = async (req, res) => {
 
         if(!email && !phone){
             return res.status(400).json({
-                message: "Either Email or Phone number required"
+                message: "Either email or phone number is required"
             })
         }
 
-        if(!password){
+        if (!password?.trim()) {
             return res.status(400).json({
-                message: "Password can't be empty"
+              message: "Password can't be empty",
             })
         }
 
         const user = await User.findOne({
-            $or: [{ email }, { phone }]
+            $or: [{ email: email?.toLowerCase() }, { phone }]
         })
+
         if(!user){
             return res.status(404).json({
-                message: "No user exist with this email/phone"
+                message: "No user exists with this email or phone number"
             })
         }
 
         const isPasswordValid = await user.isPasswordCorrect(password)
         if(!isPasswordValid){
             return res.status(401).json({
-                message: "Password doesn't match"
+                message: "Invalid password"
             })
         }
 
         const loggedUser = await User.findById(user._id).select("-password")
 
         return res.status(200).json({
-            message: "User LoggedIn Successfully",
+            message: "User logged in successfully",
             user: loggedUser,
             token: createToken(loggedUser)
         })
 
     } catch (error) {
-        console.error("Error During user logging: ",error)
+        console.error("Error during user login:", error);
         return res.status(500).json({
-            success: false,
-            message: "Internal Server Error while logging the user"
+            message: "Internal Server Error during login",
         })
+    }
+}
+
+const updateProfile = async (req, res) => {
+    try {
+        const { name, email, phone } = req.body
+
+        if(![name,email,phone].every((field) => field?.trim())){
+            return res.status(400).json({
+                message: "All Fields are required"
+            })
+        }
+    } catch (error) {
+        console.error("Server Error during updating the user profile: ",error)
     }
 }
 
