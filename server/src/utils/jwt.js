@@ -12,4 +12,14 @@ const createToken = (user) => {
     )
 }
 
-export {createToken}
+const verifyToken = (token) => {
+    return jwt.verify(
+        token,
+        process.env.JWT_SECRET
+    )
+}
+
+export {
+    createToken,
+    verifyToken
+}
