@@ -100,6 +100,28 @@ const loginUser = async (req, res) => {
     }
 }
 
+const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select("-password")
+        if(!user){
+            return res.status(404).json({
+                message: "No User Found"
+            })
+        }
+
+        return res.status(200).json({
+            message: "Fetched Successfully",
+            user: user
+        })
+        
+    } catch (error) {
+        console.error("Server Error during getProfile request: ",error)
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+}
+
 const updateProfile = async (req, res) => {
     try {
         const { name, email, phone } = req.body
@@ -109,12 +131,82 @@ const updateProfile = async (req, res) => {
                 message: "All Fields are required"
             })
         }
+
+        const isEmailExist = await User.findOne({email, _id: {$ne: req.user._id}})
+        if(isEmailExist){
+            return res.status(400).json({
+                message: "Email already in use"
+            })
+        }
+
+        const isPhoneExist = await User.findOne({phone, _id: {$ne: req.user._id}})
+        if(isPhoneExist){
+            return res.status(400).json({
+                message: "Phone number already in use"
+            })
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { 
+                name, 
+                email, 
+                phone 
+            },
+            {
+                new: true
+            }
+        ).select("-password")
+
+        return res.status(200).json({
+            message: "Profile updated successfully",
+            user: user
+        })
+
+
     } catch (error) {
         console.error("Server Error during updating the user profile: ",error)
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+}
+
+const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body
+        if(!currentPassword || !newPassword){
+            return res.status(400).json({
+                message: "Both fields are required"
+            })
+        }
+
+        const user = await User.findById(req.user._id)
+        const isPasswordValid = await user.isPasswordCorrect(currentPassword)
+        if(!isPasswordValid){
+            return res.status(400).json({
+                message: "Invalid current password"
+            })
+        }
+
+        user.password = newPassword
+        await user.save({validateBeforeSave: false})
+
+        return res.status(200).json({
+            message: "Password updated successfully"
+        })
+    } catch (error) {
+        console.error("Server error while updating the password: ",error)
+        return res.status(500).json({
+            message: error.message
+        })
     }
 }
 
 export {
     registerUser,
-    loginUser
+    loginUser,
+    getProfile,
+    updateProfile,
+    changePassword
 }
