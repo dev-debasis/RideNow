@@ -58,7 +58,8 @@ const addCar = async (req, res) => {
 
 const getAllCars = async (req, res) => {
      try {
-        const allCars = await Car.find()
+        const allCars = await Car.find().sort({ createdAt: -1 });
+
         if(!allCars){
             return res.status(404).json({
                 message: "No car found"
