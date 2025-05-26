@@ -6,6 +6,7 @@ import adminRouter from "./routes/admin.route.js"
 import carRouter from "./routes/car.route.js"
 import bookingRouter from "./routes/booking.routes.js"
 import paymentRouter from "./routes/payment.route.js"
+import aiChatRouter from "./routes/chat.route.js"
 
 const app = express()
 
@@ -25,5 +26,6 @@ app.use("/api/v1/admin", adminRouter)
 app.use("/api/v1/car", carRouter)
 app.use("/api/v1/booking", bookingRouter)
 app.use("/api/v1/payment", paymentRouter)
+app.use("/api/v1/chat", aiChatRouter)
 
 export { app }
