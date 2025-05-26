@@ -46,7 +46,10 @@ function WhyChooseUs() {
   return (
     <div className='flex items-center justify-center py-10 bg-[#F3F3F3]' id='why-choose-us'>
         <div className='w-full lg:w-1/2 flex justify-center items-center'>
-            <Spline scene="https://prod.spline.design/zk25L52l3wP9Ft7N/scene.splinecode"/>
+            <Spline 
+                scene="https://prod.spline.design/zk25L52l3wP9Ft7N/scene.splinecode"
+                className='w-full h-full'
+            />
         </div>
 
         <div className=' w-[55%] h-full flex flex-col pr-10'>

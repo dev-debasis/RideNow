@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 import logo from '../assets/logo.png'
 import { FaUser, FaUserShield } from "react-icons/fa6"
-import { Link } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef(null)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -19,6 +21,20 @@ function Navbar() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+  
+  function handleNavScroll(sectionId) {
+    if(location.pathname !== '/'){
+      navigate('/', { state: { scrollTo: sectionId } })
+    }else{
+      document.getElementById(sectionId)?.scrollIntoView({behavior: 'smooth'})
+    }
+  }
+
+  const navLinkStyles = ({ isActive }) =>
+  `cursor-pointer transition hover:text-blue-600 ${
+    isActive ? 'text-blue-600' : 'text-gray-600'
+  }`
+
 
   return (
     <div className='h-[10vh] w-full px-10 py-5'>
@@ -31,10 +47,10 @@ function Navbar() {
 
         <div className='w-[35%]'>
           <ul className='flex items-center justify-between text-sm font-medium text-gray-700'>
-            <Link className="cursor-pointer hover:text-blue-600 transition" to={'/'}>Home</Link>
-            <Link className="cursor-pointer hover:text-blue-600 transition" to={'/cars'}>Rental Deals</Link>
-            <a href='#testimonials' className="cursor-pointer hover:text-blue-600 transition">Testimonials</a>
-            <a href='#why-choose-us' className="cursor-pointer hover:text-blue-600 transition">Why Choose Us</a>
+            <NavLink className={navLinkStyles} to={'/'}>Home</NavLink>
+            <NavLink className={navLinkStyles} to={'/cars'}>Rental Deals</NavLink>
+            <li onClick={() => handleNavScroll('testimonials')} className="cursor-pointer hover:text-blue-600 transition">Testimonials</li>
+            <li onClick={() => handleNavScroll('why-choose-us')} className="cursor-pointer hover:text-blue-600 transition">Why Choose Us</li>
           </ul>
         </div>
 
